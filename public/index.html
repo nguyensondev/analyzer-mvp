@@ -411,8 +411,7 @@
 
         async function analyzeCoin(ticker) {
             // Show loading, hide others
-            const refresh = document.getElementById('refreshCheckbox').checked;
-            alert(refresh)
+            const refresh = document.getElementById('refreshCheckbox').checked;           
             loading.style.display = 'block';
             error.style.display = 'none';
             results.classList.remove('show');
@@ -438,7 +437,7 @@
         function displayResults(data) {
             // Coin info
             document.getElementById('coinName').textContent = data.name;
-            document.getElementById('coinTicker').textContent = `${data.ticker} • $${data.market_data.price_usd.toFixed(8)}`;
+            document.getElementById('coinTicker').textContent = `${data.ticker} • $${data.market_data.price_usd.toFixed(6)}`;
             
             // Overall score
             const scoreEl = document.getElementById('overallScore');

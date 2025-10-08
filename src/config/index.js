@@ -34,6 +34,85 @@ module.exports = {
     defiLlama: {
       baseUrl: 'https://api.llama.fi',
       timeout: 10000
+    },
+    // NEW: Week 1 APIs
+    twitter: {
+      bearerToken: process.env.TWITTER_BEARER_TOKEN || null,
+      enabled: !!process.env.TWITTER_BEARER_TOKEN
+    },
+    reddit: {
+      enabled: true, // No API key needed for public endpoints
+      userAgent: 'CryptoFundamentalAnalyzer/1.0'
+    },
+    github: {
+      token: process.env.GITHUB_TOKEN || null,
+      enabled: true // Works without token but rate limited
+    },
+    // Week 2 - On-Chain APIs
+    // Etherscan API (Ethereum)
+    etherscan: {
+      apiKey: process.env.ETHERSCAN_API_KEY || '',
+      baseUrl: 'https://api.etherscan.io/api',
+      timeout: 10000,
+      enabled: !!process.env.ETHERSCAN_API_KEY,
+      rateLimit: {
+        requestsPerSecond: 5,
+        requestsPerDay: 100000
+      }
+    },
+
+    // BscScan API (Binance Smart Chain)
+    bscscan: {
+      apiKey: process.env.BSCSCAN_API_KEY || '',
+      baseUrl: 'https://api.bscscan.com/api',
+      timeout: 10000,
+      enabled: !!process.env.BSCSCAN_API_KEY,
+      rateLimit: {
+        requestsPerSecond: 5,
+        requestsPerDay: 100000
+      }
+    },
+
+    // PolygonScan API (Polygon)
+    polygonscan: {
+      apiKey: process.env.POLYGONSCAN_API_KEY || '',
+      baseUrl: 'https://api.polygonscan.com/api',
+      timeout: 10000,
+      enabled: !!process.env.POLYGONSCAN_API_KEY,
+      rateLimit: {
+        requestsPerSecond: 5,
+        requestsPerDay: 100000
+      }
+    },
+
+    // Solscan API (Solana)
+    solscan: {
+      baseUrl: 'https://public-api.solscan.io',
+      timeout: 10000,
+      enabled: true, // Public API, no key needed
+      rateLimit: {
+        requestsPerSecond: 10
+      }
+    },
+
+    // Covalent API (Multi-chain)
+    covalent: {
+      apiKey: process.env.COVALENT_API_KEY || '',
+      baseUrl: 'https://api.covalenthq.com/v1',
+      timeout: 15000,
+      enabled: !!process.env.COVALENT_API_KEY,
+      rateLimit: {
+        creditsPerMonth: 100000
+      },
+      supportedChains: [
+        'eth-mainnet',
+        'bsc-mainnet',
+        'matic-mainnet',
+        'avalanche-mainnet',
+        'fantom-mainnet',
+        'arbitrum-mainnet',
+        'optimism-mainnet'
+      ]
     }
   },
   
