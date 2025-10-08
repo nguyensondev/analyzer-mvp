@@ -39,7 +39,7 @@ class CoinGeckoService {
 
       const data = response.data;
       const marketData = data.market_data;
-
+      console.log({marketData})
       const result = {
         id: data.id,
         symbol: data.symbol.toUpperCase(),

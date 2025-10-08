@@ -64,7 +64,7 @@ async function startServer() {
     await cache.connect();
 
     logger.info('Connecting to Database...');
-    await db.connect();
+    await db.init();
 
     app.listen(config.port, () => {
       logger.info(`🚀 Server running on port ${config.port}`);

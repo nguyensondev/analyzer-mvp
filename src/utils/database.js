@@ -1,8 +1,8 @@
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
-const fs = require('fs');
-const logger = require('./logger');
-const config = require('../config');
+const sqlite3 = require("sqlite3").verbose();
+const path = require("path");
+const fs = require("fs");
+const logger = require("./logger");
+const config = require("../config");
 
 class Database {
   constructor() {
@@ -12,26 +12,28 @@ class Database {
 
   init() {
     try {
+      const dataDir = path.join(__dirname, "../../data");
+      const dbPath = path.join(dataDir, "analyzer.db");
       // Ensure data directory exists
-      const dbDir = path.dirname(config.database.path);
+      const dbDir = path.dirname(dbPath);
       if (!fs.existsSync(dbDir)) {
         fs.mkdirSync(dbDir, { recursive: true });
         logger.info(`[Database] Created directory: ${dbDir}`);
       }
 
       // Connect to database
-      this.db = new sqlite3.Database(config.database.path, (err) => {
+      this.db = new sqlite3.Database(dbPath, (err) => {
         if (err) {
-          logger.error('[Database] Connection error:', err.message);
+          logger.error("[Database] Connection error:", err.message);
           throw err;
         }
-        logger.info('[Database] Connected to SQLite database');
+        logger.info("[Database] Connected to SQLite database");
       });
 
       // Create tables
       this.createTables();
     } catch (error) {
-      logger.error('[Database] Initialization error:', error.message);
+      logger.error("[Database] Initialization error:", error.message);
       throw error;
     }
   }
@@ -61,17 +63,20 @@ class Database {
     this.db.serialize(() => {
       this.db.run(createAnalysesTable, (err) => {
         if (err) {
-          logger.error('[Database] Error creating analyses table:', err.message);
+          logger.error(
+            "[Database] Error creating analyses table:",
+            err.message
+          );
         } else {
-          logger.info('[Database] Analyses table ready');
+          logger.info("[Database] Analyses table ready");
         }
       });
 
       this.db.run(createIndexes, (err) => {
         if (err) {
-          logger.error('[Database] Error creating indexes:', err.message);
+          logger.error("[Database] Error creating indexes:", err.message);
         } else {
-          logger.info('[Database] Database indexes ready');
+          logger.info("[Database] Database indexes ready");
         }
       });
     });
@@ -93,10 +98,10 @@ class Database {
         const marketScore = analysis.scores?.market || 0;
         const socialScore = analysis.scores?.social || 0;
         const onchainScore = analysis.scores?.onchain || 0;
-        
+
         // Convert analysis object to JSON string
         const analysisData = JSON.stringify(analysis);
-
+        console.log(analysisData);
         const sql = `
           INSERT INTO analyses (
             ticker, 
@@ -122,22 +127,27 @@ class Database {
             onchainScore,
             analysisData
           ],
-          function(err) {
+          function (err) {
             if (err) {
-              logger.error('[Database] Save analysis error:', err.message, {
+              logger.error("[Database] Save analysis error:", err.message, {
                 ticker,
                 coinId,
                 coinName
               });
               reject(err);
             } else {
-              logger.info(`[Database] Analysis saved for ${ticker} (ID: ${this.lastID})`);
+              logger.info(
+                `[Database] Analysis saved for ${ticker} (ID: ${this.lastID})`
+              );
               resolve(this.lastID);
             }
           }
         );
       } catch (error) {
-        logger.error('[Database] Error preparing analysis data:', error.message);
+        logger.error(
+          "[Database] Error preparing analysis data:",
+          error.message
+        );
         reject(error);
       }
     });
@@ -170,7 +180,7 @@ class Database {
 
       this.db.all(sql, [ticker.toUpperCase(), limit], (err, rows) => {
         if (err) {
-          logger.error('[Database] Get history error:', err.message);
+          logger.error("[Database] Get history error:", err.message);
           reject(err);
         } else {
           resolve(rows);
@@ -192,7 +202,7 @@ class Database {
 
       this.db.get(sql, [id], (err, row) => {
         if (err) {
-          logger.error('[Database] Get analysis by ID error:', err.message);
+          logger.error("[Database] Get analysis by ID error:", err.message);
           reject(err);
         } else if (row) {
           // Parse JSON data
@@ -200,7 +210,7 @@ class Database {
             row.analysis_data = JSON.parse(row.analysis_data);
             resolve(row);
           } catch (parseError) {
-            logger.error('[Database] JSON parse error:', parseError.message);
+            logger.error("[Database] JSON parse error:", parseError.message);
             reject(parseError);
           }
         } else {
@@ -233,7 +243,7 @@ class Database {
 
       this.db.all(sql, [limit], (err, rows) => {
         if (err) {
-          logger.error('[Database] Get top coins error:', err.message);
+          logger.error("[Database] Get top coins error:", err.message);
           reject(err);
         } else {
           resolve(rows);
@@ -262,7 +272,7 @@ class Database {
 
       this.db.get(sql, [], (err, row) => {
         if (err) {
-          logger.error('[Database] Get statistics error:', err.message);
+          logger.error("[Database] Get statistics error:", err.message);
           reject(err);
         } else {
           resolve(row);
@@ -283,9 +293,9 @@ class Database {
         WHERE created_at < datetime('now', '-${daysToKeep} days')
       `;
 
-      this.db.run(sql, function(err) {
+      this.db.run(sql, function (err) {
         if (err) {
-          logger.error('[Database] Cleanup error:', err.message);
+          logger.error("[Database] Cleanup error:", err.message);
           reject(err);
         } else {
           logger.info(`[Database] Cleaned up ${this.changes} old analyses`);
@@ -295,6 +305,22 @@ class Database {
     });
   }
 
+  logApiCall(service, endpoint, success = true) {
+    // Simple implementation - just log, no database
+    logger.info(
+      `[API Call] ${service} - ${endpoint} - ${success ? "Success" : "Failed"}`
+    );
+
+    // Or if you want to save to DB, uncomment:
+    /*
+  const sql = `
+    INSERT INTO api_logs (service, endpoint, success, created_at)
+    VALUES (?, ?, ?, datetime('now'))
+  `;
+  this.db.run(sql, [service, endpoint, success ? 1 : 0]);
+  */
+  }
+
   /**
    * Close database connection
    */
@@ -302,9 +328,9 @@ class Database {
     if (this.db) {
       this.db.close((err) => {
         if (err) {
-          logger.error('[Database] Error closing database:', err.message);
+          logger.error("[Database] Error closing database:", err.message);
         } else {
-          logger.info('[Database] Database connection closed');
+          logger.info("[Database] Database connection closed");
         }
       });
     }

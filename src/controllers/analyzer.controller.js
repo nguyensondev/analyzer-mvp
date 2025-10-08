@@ -37,17 +37,17 @@ class AnalyzeController {
 
       // Perform analysis
       const analysis = await analyzerService.analyze(ticker);
-
+      console.log(analysis)
       // Save to database (async, don't wait)
       // Pass ticker explicitly to ensure it's not undefined
-      database.saveAnalysis(ticker.toUpperCase(), analysis)
-        .then(() => {
-          logger.info(`[Controller] Analysis saved to database for ${ticker.toUpperCase()}`);
-        })
-        .catch(err => {
-          logger.error(`[Controller] Failed to save analysis for ${ticker.toUpperCase()}:`, err.message);
-          // Don't fail the request if database save fails
-        });
+      // database.saveAnalysis(ticker.toUpperCase(), analysis)
+      //   .then(() => {
+      //     logger.info(`[Controller] Analysis saved to database for ${ticker.toUpperCase()}`);
+      //   })
+      //   .catch(err => {
+      //     logger.error(`[Controller] Failed to save analysis for ${ticker.toUpperCase()}:`, err.message);
+      //     // Don't fail the request if database save fails
+      //   });
 
       // Return analysis result
       res.json({

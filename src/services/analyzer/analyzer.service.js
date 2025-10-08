@@ -74,7 +74,7 @@ class AnalyzerService {
       await cache.set(cacheKey, analysis, this.cacheTTL);
 
       logger.info(`[Analyzer] Analysis complete for ${ticker} in ${analysis.execution_time_ms}ms`);
-
+      console.log("dasdad")
       return analysis;
     } catch (error) {
       logger.error(`[Analyzer] Error analyzing ${ticker}:`, error.message);

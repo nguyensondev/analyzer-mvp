@@ -4,9 +4,9 @@ const analyzerController = require('../controllers/analyzer.controller');
 const router = express.Router();
 
 router.get('/health', analyzerController.healthCheck);
-router.get('/analyze/:ticker', analyzerController.analyzeCoin);
+router.get('/analyze/:ticker', analyzerController.analyze);
 router.get('/history/:ticker', analyzerController.getHistory);
-router.post('/compare', analyzerController.compareCoins);
+// router.post('/compare', analyzerController.compareCoins);
 
 router.get('/', (req, res) => {
   res.json({
