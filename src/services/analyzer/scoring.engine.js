@@ -27,12 +27,10 @@ class ScoringEngine {
     }
   }
 
-  // Tokenomics Score (0-10)
   scoreTokenomics(coinData) {
-    let score = 5; // Base score
+    let score = 5;
     const flags = [];
 
-    // Circulating supply ratio
     const circulatingRatio = coinData.circulating_supply / coinData.total_supply;
     
     if (circulatingRatio > 0.7) {
@@ -46,7 +44,6 @@ class ScoringEngine {
       flags.push('Low circulating ratio (<40%) - Risk of dilution');
     }
 
-    // Max supply check
     if (coinData.max_supply && coinData.max_supply > 0) {
       score += 1;
       flags.push('Fixed max supply - Predictable');
@@ -55,7 +52,6 @@ class ScoringEngine {
       flags.push('No max supply - Potential inflation');
     }
 
-    // Market cap relative to total supply valuation
     const fullyDilutedValuation = coinData.price_usd * coinData.total_supply;
     const fdvToMcapRatio = fullyDilutedValuation / coinData.market_cap;
     
@@ -81,13 +77,11 @@ class ScoringEngine {
     };
   }
 
-  // Liquidity Score (0-10)
   scoreLiquidity(coinData) {
     let score = 5;
     const flags = [];
     const liquidity = coinData.liquidity;
 
-    // Volume to market cap ratio
     const volumeRatio = liquidity.volume_to_market_cap;
     
     if (volumeRatio > 10) {
@@ -104,7 +98,6 @@ class ScoringEngine {
       flags.push('Low volume/mcap ratio (<2%) - Illiquid');
     }
 
-    // Binance volume dominance (quality check)
     const binanceRatio = liquidity.binance_volume / liquidity.total_volume;
     
     if (binanceRatio > 0.3 && binanceRatio < 0.8) {
@@ -121,7 +114,6 @@ class ScoringEngine {
       flags.push('Very low Binance volume (<10%) - Wash trading risk');
     }
 
-    // Absolute volume check
     if (liquidity.total_volume > 50000000) {
       score += 1;
       flags.push('High absolute volume (>$50M)');
@@ -144,72 +136,126 @@ class ScoringEngine {
     };
   }
 
-  // Social Score (0-10)
   scoreSocial(socialData) {
     let score = 5;
     const flags = [];
 
-    // Galaxy score mapping (0-100 → 0-10)
-    const galaxyContribution = (socialData.galaxy_score / 100) * 4;
-    score += galaxyContribution - 2; // Normalize around 5
+    // Check if using new enhanced format or old mock format
+    const isEnhanced = socialData.data_source === 'real (enhanced)';
 
-    if (socialData.galaxy_score >= 70) {
-      flags.push('Strong social presence (Galaxy >70)');
-    } else if (socialData.galaxy_score >= 50) {
-      flags.push('Moderate social presence (Galaxy 50-70)');
+    if (isEnhanced) {
+      // NEW: Score based on real API data
+      const communityScore = socialData.community_score || 0;
+      const engagementScore = socialData.engagement_score || 0;
+      const developerScore = socialData.developer_score || 0;
+
+      // Map 0-100 scores to 0-10 scale
+      score = ((communityScore * 0.4 + engagementScore * 0.3 + developerScore * 0.3) / 100) * 10;
+
+      // Add flags based on real data
+      if (socialData.twitter) {
+        if (socialData.twitter.followers > 100000) {
+          flags.push(`Strong Twitter presence (${(socialData.twitter.followers / 1000).toFixed(0)}K followers)`);
+        }
+        if (socialData.twitter.verified) {
+          flags.push('Verified Twitter account');
+        }
+      }
+
+      if (socialData.reddit) {
+        if (socialData.reddit.subscribers > 50000) {
+          flags.push(`Large Reddit community (${(socialData.reddit.subscribers / 1000).toFixed(0)}K members)`);
+        }
+        if (socialData.reddit.activity_ratio > 2) {
+          flags.push('High Reddit activity ratio');
+        }
+      }
+
+      if (socialData.github) {
+        if (socialData.github.days_since_last_commit < 7) {
+          flags.push('Active development (commits within last week)');
+        }
+        if (socialData.github.stars > 1000) {
+          flags.push(`Popular GitHub repo (${(socialData.github.stars / 1000).toFixed(1)}K stars)`);
+        }
+      }
+
+      // Sentiment
+      if (socialData.sentiment === 'bullish') {
+        score += 0.5;
+        flags.push('Bullish community sentiment');
+      } else if (socialData.sentiment === 'bearish') {
+        score -= 0.5;
+        flags.push('Bearish community sentiment');
+      }
+
     } else {
-      flags.push('Weak social presence (Galaxy <50)');
-    }
+      // OLD: Mock data scoring (fallback)
+      const galaxyContribution = (socialData.galaxy_score / 100) * 4;
+      score += galaxyContribution - 2;
 
-    // Alt rank (lower is better)
-    if (socialData.alt_rank <= 100) {
-      score += 2;
-      flags.push('Top 100 social rank - Excellent');
-    } else if (socialData.alt_rank <= 500) {
-      score += 1;
-      flags.push('Top 500 social rank - Good');
-    } else if (socialData.alt_rank > 2000) {
-      score -= 1;
-      flags.push('Low social rank (>2000)');
-    }
+      if (socialData.galaxy_score >= 70) {
+        flags.push('Strong social presence (Galaxy >70)');
+      } else if (socialData.galaxy_score >= 50) {
+        flags.push('Moderate social presence (Galaxy 50-70)');
+      } else {
+        flags.push('Weak social presence (Galaxy <50)');
+      }
 
-    // Sentiment check
-    if (socialData.sentiment === 'bullish') {
-      score += 1;
-      flags.push('Bullish sentiment');
-    } else if (socialData.sentiment === 'bearish') {
-      score -= 0.5;
-      flags.push('Bearish sentiment');
-    }
+      if (socialData.alt_rank <= 100) {
+        score += 2;
+        flags.push('Top 100 social rank - Excellent');
+      } else if (socialData.alt_rank <= 500) {
+        score += 1;
+        flags.push('Top 500 social rank - Good');
+      } else if (socialData.alt_rank > 2000) {
+        score -= 1;
+        flags.push('Low social rank (>2000)');
+      }
 
-    // Social volume
-    if (socialData.social_volume_24h > 20000) {
-      score += 1;
-      flags.push('High social volume (>20k mentions)');
-    } else if (socialData.social_volume_24h < 5000) {
-      score -= 0.5;
-      flags.push('Low social volume (<5k mentions)');
+      if (socialData.sentiment === 'bullish') {
+        score += 1;
+        flags.push('Bullish sentiment');
+      } else if (socialData.sentiment === 'bearish') {
+        score -= 0.5;
+        flags.push('Bearish sentiment');
+      }
+
+      if (socialData.social_volume_24h > 20000) {
+        score += 1;
+        flags.push('High social volume (>20k mentions)');
+      } else if (socialData.social_volume_24h < 5000) {
+        score -= 0.5;
+        flags.push('Low social volume (<5k mentions)');
+      }
     }
 
     return {
       score: Math.max(0, Math.min(10, parseFloat(score.toFixed(2)))),
-      details: {
+      details: isEnhanced ? {
+        community_score: socialData.community_score,
+        engagement_score: socialData.engagement_score,
+        developer_score: socialData.developer_score,
+        overall_social_score: socialData.overall_social_score,
+        sentiment: socialData.sentiment,
+        has_twitter: !!socialData.twitter,
+        has_reddit: !!socialData.reddit,
+        has_github: !!socialData.github
+      } : {
         galaxy_score: socialData.galaxy_score,
         alt_rank: socialData.alt_rank,
         sentiment: socialData.sentiment,
         social_volume: socialData.social_volume_24h
       },
       flags: flags,
-      data_quality: socialData.confidence_level || 'simulated'
+      data_quality: socialData.data_quality || socialData.confidence_level || 'simulated'
     };
   }
 
-  // On-chain Score (0-10)
   scoreOnchain(onchainData) {
     let score = 5;
     const flags = [];
 
-    // Active addresses (health indicator)
     if (onchainData.active_addresses_7d > 10000) {
       score += 2;
       flags.push('High activity (>10k addresses/week)');
@@ -221,7 +267,6 @@ class ScoringEngine {
       flags.push('Low activity (<1k addresses)');
     }
 
-    // Growth metrics
     if (onchainData.address_growth_mom > 20) {
       score += 2;
       flags.push('Strong growth (>20% MoM)');
@@ -233,7 +278,6 @@ class ScoringEngine {
       flags.push('Declining users (>10% drop)');
     }
 
-    // TVL trend
     if (onchainData.tvl_change_7d > 10) {
       score += 1.5;
       flags.push('TVL growing (>10% weekly)');
@@ -242,7 +286,6 @@ class ScoringEngine {
       flags.push('TVL declining (>15% weekly)');
     }
 
-    // Daily active ratio
     if (onchainData.daily_active_ratio > 40) {
       score += 1;
       flags.push('High user retention (>40% DAU/MAU)');

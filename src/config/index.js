@@ -34,6 +34,19 @@ module.exports = {
     defiLlama: {
       baseUrl: 'https://api.llama.fi',
       timeout: 10000
+    },
+    // NEW: Week 1 APIs
+    twitter: {
+      bearerToken: process.env.TWITTER_BEARER_TOKEN || null,
+      enabled: !!process.env.TWITTER_BEARER_TOKEN
+    },
+    reddit: {
+      enabled: true, // No API key needed for public endpoints
+      userAgent: 'CryptoFundamentalAnalyzer/1.0'
+    },
+    github: {
+      token: process.env.GITHUB_TOKEN || null,
+      enabled: true // Works without token but rate limited
     }
   },
   

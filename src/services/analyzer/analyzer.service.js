@@ -1,6 +1,7 @@
 const coingeckoService = require('../real/coingecko.service');
 const defillamaService = require('../real/defilama.service');
 const twitterService = require('../real/twitter.service');
+const socialEnhanced = require('./social-enhanced.service');
 const socialMock = require('../mock/social.mock');
 const onchainMock = require('../mock/onchain.mock');
 const scoringEngine = require('./scoring.engine');
@@ -13,27 +14,23 @@ class AnalyzerService {
     const startTime = Date.now();
 
     try {
-      // Step 1: Get real coin data from CoinGecko
       logger.info(`[${ticker}] Fetching CoinGecko data...`);
       const coinData = await coingeckoService.getCoinData(ticker);
 
-      // Step 2: Get TVL data from DefiLlama (if it's a DeFi project)
       logger.info(`[${ticker}] Fetching DefiLlama data...`);
       const tvlData = await defillamaService.getProtocolTVL(ticker);
 
-      // Step 3: Get Twitter data (real scraping)
-      logger.info(`[${ticker}] Scraping Twitter data...`);
+      logger.info(`[${ticker}] Fetching Social data (Twitter scraping - old method)...`);
       const twitterData = await twitterService.scrapeBasicStats(ticker);
 
-      // Step 4: Generate mock social metrics (LunarCrush-style)
-      logger.info(`[${ticker}] Generating social metrics...`);
-      const socialData = socialMock.generateSocialMetrics(
+      logger.info(`[${ticker}] Fetching Enhanced Social metrics (NEW APIs)...`);
+      // NEW: Use enhanced social service instead of mock
+      const socialData = await socialEnhanced.getSocialMetrics(
         ticker,
-        coinData.market_cap,
-        twitterData.followers
+        coinData.name,
+        coinData.market_cap
       );
 
-      // Step 5: Generate mock on-chain metrics (Dune-style)
       logger.info(`[${ticker}] Generating on-chain metrics...`);
       const onchainData = onchainMock.generateOnchainMetrics(
         ticker,
@@ -42,7 +39,6 @@ class AnalyzerService {
         coinData.total_volume_24h
       );
 
-      // Step 6: Calculate scores
       logger.info(`[${ticker}] Calculating scores...`);
       const tokenomicsResult = scoringEngine.scoreTokenomics(coinData);
       const liquidityResult = scoringEngine.scoreLiquidity(coinData);
@@ -59,7 +55,6 @@ class AnalyzerService {
       const overallScore = scoringEngine.calculateOverallScore(scores);
       const classification = scoringEngine.classifyScore(overallScore);
 
-      // Step 7: Compile final result
       const result = {
         ticker: ticker.toUpperCase(),
         name: coinData.name,
@@ -131,14 +126,12 @@ class AnalyzerService {
     }
   }
 
-  // Batch analysis (future feature)
   async analyzeBatch(tickers, maxConcurrent = 3) {
     logger.info(`Batch analysis for ${tickers.length} coins`);
     
     const results = [];
     const errors = [];
 
-    // Process in batches to avoid rate limits
     for (let i = 0; i < tickers.length; i += maxConcurrent) {
       const batch = tickers.slice(i, i + maxConcurrent);
       
@@ -153,7 +146,6 @@ class AnalyzerService {
 
       await Promise.all(batchPromises);
       
-      // Wait between batches to respect rate limits
       if (i + maxConcurrent < tickers.length) {
         await this.sleep(2000);
       }
