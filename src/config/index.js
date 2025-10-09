@@ -47,7 +47,18 @@ module.exports = {
     github: {
       token: process.env.GITHUB_TOKEN || null,
       enabled: true // Works without token but rate limited
-    }
+    },
+     // Etherscan API (Ethereum)
+    etherscan: {
+      apiKey: process.env.ETHERSCAN_API_KEY || '',
+      baseUrl: 'https://api.etherscan.io/api',
+      timeout: 10000,
+      enabled: !!process.env.ETHERSCAN_API_KEY,
+      rateLimit: {
+        requestsPerSecond: 5,
+        requestsPerDay: 100000
+      }
+    },
   },
   
   mock: {

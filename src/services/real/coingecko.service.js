@@ -39,9 +39,11 @@ class CoinGeckoService {
 
       const data = response.data;
       const marketData = data.market_data;
-
+      
+     
       const result = {
         id: data.id,
+        platforms: data.platforms,
         symbol: data.symbol.toUpperCase(),
         name: data.name,
         price_usd: marketData.current_price?.usd || 0,
