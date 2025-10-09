@@ -69,8 +69,8 @@ async function startServer() {
     app.listen(config.port, () => {
       logger.info(`🚀 Server running on port ${config.port}`);
       logger.info(`📊 Environment: ${config.nodeEnv}`);
-      logger.info(`🔗 API: http://13.112.221.74:${config.port}/api`);
-      logger.info(`💚 Health: http://13.112.221.74:${config.port}/api/health`);
+      logger.info(`🔗 API: http://13.159.107.41:${config.port}/api`);
+      logger.info(`💚 Health: http://13.159.107.41:${config.port}/api/health`);
     });
 
   } catch (error) {
