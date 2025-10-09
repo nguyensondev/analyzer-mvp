@@ -15,7 +15,7 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 20px;
+            padding: 15px;
         }
 
         .container {
@@ -26,35 +26,40 @@
         .header {
             text-align: center;
             color: white;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
         }
 
         .header h1 {
-            font-size: 2.5rem;
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
             margin-bottom: 10px;
+            padding: 0 10px;
         }
 
         .header p {
-            font-size: 1.1rem;
+            font-size: clamp(0.9rem, 3vw, 1.1rem);
             opacity: 0.9;
+            padding: 0 10px;
         }
 
         .search-box {
             background: white;
-            padding: 30px;
+            padding: 20px;
             border-radius: 15px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
 
         .search-form {
             display: flex;
+            flex-wrap: wrap;
             gap: 10px;
+            align-items: center;
         }
 
         .search-input {
-            flex: 1;
-            padding: 15px 20px;
+            flex: 1 1 200px;
+            min-width: 0;
+            padding: 12px 15px;
             border: 2px solid #e0e0e0;
             border-radius: 10px;
             font-size: 1rem;
@@ -66,8 +71,28 @@
             border-color: #667eea;
         }
 
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 5px 10px;
+            white-space: nowrap;
+        }
+
+        .checkbox-wrapper input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .checkbox-wrapper span {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
         .search-btn {
-            padding: 15px 40px;
+            padding: 12px 30px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
@@ -76,6 +101,7 @@
             font-weight: 600;
             cursor: pointer;
             transition: transform 0.2s;
+            white-space: nowrap;
         }
 
         .search-btn:hover {
@@ -89,9 +115,9 @@
 
         .loading {
             text-align: center;
-            padding: 40px;
+            padding: 30px 15px;
             color: white;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
         }
 
         .spinner {
@@ -112,10 +138,11 @@
         .error {
             background: #ff4444;
             color: white;
-            padding: 20px;
+            padding: 15px;
             border-radius: 10px;
             margin-bottom: 20px;
             text-align: center;
+            word-break: break-word;
         }
 
         .results {
@@ -128,7 +155,7 @@
 
         .score-card {
             background: white;
-            padding: 30px;
+            padding: 20px;
             border-radius: 15px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.2);
             margin-bottom: 20px;
@@ -136,29 +163,38 @@
 
         .coin-header {
             display: flex;
+            flex-wrap: wrap;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
+            align-items: flex-start;
+            gap: 20px;
+            margin-bottom: 25px;
             padding-bottom: 20px;
             border-bottom: 2px solid #f0f0f0;
         }
 
+        .coin-info {
+            flex: 1 1 200px;
+        }
+
         .coin-info h2 {
-            font-size: 2rem;
+            font-size: clamp(1.5rem, 4vw, 2rem);
             margin-bottom: 5px;
+            word-break: break-word;
         }
 
         .coin-info .ticker {
             color: #666;
-            font-size: 1.1rem;
+            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+            word-break: break-all;
         }
 
         .overall-score {
             text-align: right;
+            flex-shrink: 0;
         }
 
         .score-number {
-            font-size: 3rem;
+            font-size: clamp(2rem, 6vw, 3rem);
             font-weight: bold;
             line-height: 1;
         }
@@ -171,10 +207,12 @@
 
         .classification {
             display: inline-block;
-            padding: 8px 20px;
+            padding: 8px 16px;
             border-radius: 20px;
             font-weight: 600;
             margin-top: 10px;
+            font-size: clamp(0.75rem, 2vw, 0.9rem);
+            word-break: break-word;
         }
 
         .classification.GREEN {
@@ -194,27 +232,28 @@
 
         .scores-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
         }
 
         .score-item {
             background: #f8f9fa;
-            padding: 20px;
+            padding: 15px;
             border-radius: 10px;
             border-left: 4px solid #667eea;
+            text-align: center;
         }
 
         .score-item h3 {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: #666;
             margin-bottom: 10px;
             text-transform: uppercase;
         }
 
         .score-item .score {
-            font-size: 2rem;
+            font-size: clamp(1.5rem, 4vw, 2rem);
             font-weight: bold;
             color: #333;
         }
@@ -225,18 +264,18 @@
 
         .details-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
         }
 
         .detail-card {
             background: #f8f9fa;
-            padding: 20px;
+            padding: 15px;
             border-radius: 10px;
         }
 
         .detail-card h3 {
-            font-size: 1.2rem;
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
             margin-bottom: 15px;
             color: #333;
         }
@@ -244,8 +283,10 @@
         .detail-item {
             display: flex;
             justify-content: space-between;
+            gap: 10px;
             padding: 8px 0;
             border-bottom: 1px solid #e0e0e0;
+            flex-wrap: wrap;
         }
 
         .detail-item:last-child {
@@ -254,24 +295,31 @@
 
         .detail-label {
             color: #666;
+            font-size: 0.9rem;
+            flex: 1 1 100px;
         }
 
         .detail-value {
             font-weight: 600;
             color: #333;
+            font-size: 0.9rem;
+            text-align: right;
+            word-break: break-word;
         }
 
         .flags {
             margin-top: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
         }
 
         .flag {
             display: inline-block;
             padding: 6px 12px;
-            margin: 4px;
             background: white;
             border-radius: 5px;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: #555;
         }
 
@@ -281,8 +329,9 @@
             padding: 15px;
             border-radius: 5px;
             margin-top: 20px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: #856404;
+            word-break: break-word;
         }
 
         .data-sources {
@@ -290,7 +339,8 @@
             padding: 15px;
             background: #e3f2fd;
             border-radius: 5px;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
+            word-break: break-word;
         }
 
         .data-sources strong {
@@ -305,8 +355,83 @@
             background: #2196f3;
             color: white;
             border-radius: 12px;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             margin-left: 10px;
+            margin-top: 5px;
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 640px) {
+            body {
+                padding: 10px;
+            }
+
+            .search-box {
+                padding: 15px;
+            }
+
+            .search-form {
+                flex-direction: column;
+            }
+
+            .search-input {
+                width: 100%;
+            }
+
+            .checkbox-wrapper {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .search-btn {
+                width: 100%;
+                padding: 15px;
+            }
+
+            .score-card {
+                padding: 15px;
+            }
+
+            .coin-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .overall-score {
+                text-align: center;
+                padding-top: 15px;
+                border-top: 1px solid #f0f0f0;
+            }
+
+            .scores-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+
+            .details-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .detail-item {
+                font-size: 0.85rem;
+            }
+
+            .classification {
+                display: block;
+                text-align: center;
+            }
+        }
+
+        /* Tablet optimizations */
+        @media (min-width: 641px) and (max-width: 1024px) {
+            .scores-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .details-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
     </style>
 </head>
@@ -327,9 +452,9 @@
                     required
                     autocomplete="off"
                 >
-                <label style="display: flex; align-items: center; gap: 8px; margin: 0 10px; cursor: pointer;">
-                    <input checked type="checkbox" id="refreshCheckbox" style="width: 18px; height: 18px; cursor: pointer;">
-                    <span style="font-size: 0.9rem; color: #666;">Force Refresh</span>
+                <label class="checkbox-wrapper">
+                    <input checked type="checkbox" id="refreshCheckbox">
+                    <span>Force Refresh</span>
                 </label>
                 <button type="submit" class="search-btn" id="searchBtn">
                     Analyze
@@ -391,7 +516,7 @@
     </div>
 
     <script>
-        const API_BASE = 'http://localhost:3000/api';
+        const API_BASE = 'http://13.112.221.74:3000/api';
         
         const form = document.getElementById('searchForm');
         const tickerInput = document.getElementById('tickerInput');
@@ -410,7 +535,6 @@
         });
 
         async function analyzeCoin(ticker) {
-            // Show loading, hide others
             const refresh = document.getElementById('refreshCheckbox').checked;           
             loading.style.display = 'block';
             error.style.display = 'none';
@@ -435,30 +559,23 @@
         }
 
         function displayResults(data) {
-            // Coin info
             document.getElementById('coinName').textContent = data.name;
             document.getElementById('coinTicker').textContent = `${data.ticker} • $${data.market_data.price_usd.toFixed(8)}`;
             
-            // Overall score
             const scoreEl = document.getElementById('overallScore');
             scoreEl.textContent = data.overall_score.toFixed(2);
             scoreEl.style.color = getScoreColor(data.overall_score);
             
-            // Classification
             const classEl = document.getElementById('classification');
             classEl.textContent = `${data.classification} - ${data.classification_description}`;
             classEl.className = `classification ${data.classification}`;
             
-            // Individual scores
             document.getElementById('tokenomicsScore').textContent = data.scores.tokenomics.toFixed(1);
             document.getElementById('liquidityScore').textContent = data.scores.liquidity.toFixed(1);
             document.getElementById('socialScore').textContent = data.scores.social.toFixed(1);
             document.getElementById('onchainScore').textContent = data.scores.onchain.toFixed(1);
             
-            // Details
             displayDetails(data.details, data.market_data);
-            
-            // Data sources
             displayDataSources(data.data_sources, data.from_cache);
             
             results.classList.add('show');
@@ -468,7 +585,6 @@
             const detailsGrid = document.getElementById('detailsGrid');
             detailsGrid.innerHTML = '';
 
-            // Market Data
             detailsGrid.innerHTML += `
                 <div class="detail-card">
                     <h3>💰 Market Data</h3>
@@ -491,23 +607,15 @@
                 </div>
             `;
 
-            // Tokenomics Details
             detailsGrid.innerHTML += createDetailCard('🪙 Tokenomics', details.tokenomics);
-            
-            // Liquidity Details
             detailsGrid.innerHTML += createDetailCard('💧 Liquidity', details.liquidity);
-            
-            // Social Details
             detailsGrid.innerHTML += createDetailCard('📱 Social Metrics', details.social);
-            
-            // On-chain Details
             detailsGrid.innerHTML += createDetailCard('⛓️ On-Chain Activity', details.onchain);
         }
 
         function createDetailCard(title, data) {
             let html = `<div class="detail-card"><h3>${title}</h3>`;
             
-            // Add detail items
             for (const [key, value] of Object.entries(data)) {
                 if (key === 'flags' || key === 'data_source') continue;
                 
@@ -524,7 +632,6 @@
                 `;
             }
             
-            // Add flags
             if (data.flags && data.flags.length > 0) {
                 html += '<div class="flags">';
                 data.flags.forEach(flag => {
